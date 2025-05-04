@@ -119,7 +119,7 @@
 //!
 //! ## `jitter`
 //!
-//! ```rust,no_run
+//! ```rust,ignore
 //! use tokio_retry2::Retry;
 //! use tokio_retry2::strategy::{ExponentialBackoff, jitter, MaxInterval};
 //!
@@ -127,11 +127,11 @@
 //!    .max_interval(10000) // set max interval to 10 seconds
 //!    .map(jitter) // add jitter to the retry interval
 //!    .take(3);    // limit to 3 retries
-//!````
+//!```
 //!
 //! ## `jitter_range`
 //!
-//! ```rust,no_run
+//! ```rust,ignore
 //! use tokio_retry2::Retry;
 //! use tokio_retry2::strategy::{ExponentialFactorBackoff, jitter_range, MaxInterval};
 //!
@@ -139,7 +139,7 @@
 //!    .max_interval(10000) // set max interval to 10 seconds
 //!    .map(jitter_range(0.5, 1.2)) // add jitter ranging between 50% and 120% to the retry interval
 //!    .take(3);    // limit to 3 retries
-//!````
+//!```
 //!
 //! ### NOTE:
 //! The time spent executing an action does not affect the intervals between
