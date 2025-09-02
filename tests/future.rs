@@ -170,11 +170,11 @@ async fn notify_retry_after_duration() {
 }
 
 fn message_100ms(err: &u64, duration: Duration) {
-    let msg = format!("err: {}, duration: {:?}", err, duration);
+    let msg = format!("err: {err}, duration: {duration:?}");
     assert_eq!(msg, "err: 42, duration: 100ms");
 }
 
 fn message(err: &u64, duration: Duration) {
-    let msg = format!("err: {}, duration: {:?}", err, duration);
+    let msg = format!("err: {err}, duration: {duration:?}");
     assert_eq!(msg, "err: 42, duration: 0ns");
 }

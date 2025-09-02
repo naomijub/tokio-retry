@@ -1,4 +1,4 @@
-//! This library provides extensible asynchronous retry behaviours
+//! This library provides extensible asynchronous retry behaviors
 //! for use with the ecosystem of [`tokio`](https://tokio.rs/) libraries.
 //!
 //! There are 4 backoff strategies:
@@ -55,7 +55,7 @@
 //! # #[tokio::main]
 //! # async fn main() -> Result<(), RetryError<()>> {
 //! let retry_strategy = ExponentialBackoff::from_millis(10)
-//!     .factor(1) // multiplication factor applied to deplay
+//!     .factor(1) // multiplication factor applied to delay
 //!     .max_delay_millis(100) // set max delay between retries to 500ms
 //!     .max_interval(1000) // set max interval to 1 second for all retries
 //!     .take(3);    // limit to 3 retries
@@ -120,6 +120,8 @@
 //! ## `jitter`
 //!
 //! ```rust,no_run
+//! # #[cfg(feature = "jitter")]
+//! # {
 //! use tokio_retry2::Retry;
 //! use tokio_retry2::strategy::{ExponentialBackoff, jitter, MaxInterval};
 //!
@@ -127,11 +129,14 @@
 //!    .max_interval(10000) // set max interval to 10 seconds
 //!    .map(jitter) // add jitter to the retry interval
 //!    .take(3);    // limit to 3 retries
+//! # }
 //!````
 //!
 //! ## `jitter_range`
 //!
 //! ```rust,no_run
+//! # #[cfg(feature = "jitter")]
+//! # {
 //! use tokio_retry2::Retry;
 //! use tokio_retry2::strategy::{ExponentialFactorBackoff, jitter_range, MaxInterval};
 //!
@@ -139,6 +144,7 @@
 //!    .max_interval(10000) // set max interval to 10 seconds
 //!    .map(jitter_range(0.5, 1.2)) // add jitter ranging between 50% and 120% to the retry interval
 //!    .take(3);    // limit to 3 retries
+//! }
 //!````
 //!
 //! ### NOTE:

@@ -17,7 +17,7 @@ pub enum Error<E> {
 
     /// `Transient` means that the error is temporary. If the `retry_after` is `None`
     /// the operation should be retried according to the defined strategy policy, else after
-    /// the specified duration. Useful for handling ratelimits like a HTTP 429 response.
+    /// the specified duration. Useful for handling rate limits like a HTTP 429 response.
     Transient {
         err: E,
         retry_after: Option<Duration>,
@@ -55,7 +55,7 @@ impl<E> Error<E> {
 
     /// Creates a Result::Err container with a transient error which
     /// is retried after the specified duration.
-    /// Useful for handling ratelimits like a HTTP 429 response.
+    /// Useful for handling rate limits like a HTTP 429 response.
     pub fn to_retry_after<T>(err: E, duration: Duration) -> Result<T, Self> {
         Err(Error::Transient {
             err,
@@ -64,7 +64,7 @@ impl<E> Error<E> {
     }
 
     /// Creates a transient error which is retried after the specified duration.
-    /// Useful for handling ratelimits like a HTTP 429 response.
+    /// Useful for handling rate limits like a HTTP 429 response.
     pub fn retry_after(err: E, duration: Duration) -> Self {
         Error::Transient {
             err,
@@ -317,7 +317,7 @@ mod test {
     #[test]
     fn fmt_permanent_error() {
         let error = Error::Permanent(PERMANENT_ERROR);
-        let formatted = format!("{}", error);
+        let formatted = format!("{error}");
         assert_eq!(formatted, PERMANENT_ERROR);
     }
 
@@ -327,14 +327,14 @@ mod test {
             err: TRANSIENT_ERROR,
             retry_after: None,
         };
-        let formatted = format!("{}", error);
+        let formatted = format!("{error}");
         assert_eq!(formatted, TRANSIENT_ERROR);
     }
 
     #[test]
     fn debug_permanent_error() {
         let error = Error::Permanent(PERMANENT_ERROR);
-        let debug = format!("{:?}", error);
+        let debug = format!("{error:?}");
         assert_eq!(debug, "Permanent(\"permanent error\")");
     }
 
@@ -344,7 +344,7 @@ mod test {
             err: TRANSIENT_ERROR,
             retry_after: None,
         };
-        let debug = format!("{:?}", error);
+        let debug = format!("{error:?}");
         assert_eq!(debug, "Transient(\"transient error\")");
     }
 
