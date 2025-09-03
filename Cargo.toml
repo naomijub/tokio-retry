@@ -8,7 +8,7 @@ readme = "README.md"
 repository = "https://github.com/naomijub/tokio-retry"
 documentation = "https://docs.rs/tokio-retry2"
 keywords = ["tokio", "retry", "backoff"]
-edition = "2021"
+edition = "2024"
 
 [features]
 jitter = ["rand"]

@@ -148,9 +148,7 @@ where
 {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Error::Permanent(ref self_err), Error::Permanent(ref other_err)) => {
-                self_err == other_err
-            }
+            (Error::Permanent(self_err), Error::Permanent(other_err)) => self_err == other_err,
             (
                 Error::Transient {
                     err: self_err,
