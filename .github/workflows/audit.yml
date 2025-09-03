@@ -9,8 +9,12 @@ github-token:
     issues-reason: to create issues
     checks: write
     checks-reason: to create check
-    
+
 on:
+  schedule:
+    - cron: "0 0 1,15 * *"
+  pull_request:
+    branches: [ "*" ]
   push:
     paths: 
       - '**/Cargo.toml'
