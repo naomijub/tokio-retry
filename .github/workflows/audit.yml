@@ -1,21 +1,9 @@
 name: Security audit
 
-github-token:
-  action-input:
-    input: GITHUB_TOKEN
-    is-default: false
-  permissions:
-    issues: write
-    issues-reason: to create issues
-    checks: write
-    checks-reason: to create check
+permissions:
+  issues: write
+  checks: write
 
-inputs:
-  github-token:
-    description: |
-      The github-token to use.
-    default: ${{ github.token }}
-    required: true
 on:
   schedule:
     - cron: "0 0 1,15 * *"
