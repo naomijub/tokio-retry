@@ -14,7 +14,7 @@ on:
   schedule:
     - cron: "0 0 1,15 * *"
   pull_request:
-    branches: [ "*" ]
+    branches: [ "main" ]
   push:
     paths: 
       - '**/Cargo.toml'
