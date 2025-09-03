@@ -7,8 +7,6 @@ permissions:
 on:
   schedule:
     - cron: "0 0 1,15 * *"
-  pull_request:
-    branches: [ "main" ]
   push:
     paths: 
       - '**/Cargo.toml'
