@@ -1,0 +1,26 @@
+name: Security audit
+
+github-token:
+  action-input:
+    input: token
+    is-default: false
+  permissions:
+    issues: write
+    issues-reason: to create issues
+    checks: write
+    checks-reason: to create check
+    
+on:
+  push:
+    paths: 
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+jobs:
+  security_audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
