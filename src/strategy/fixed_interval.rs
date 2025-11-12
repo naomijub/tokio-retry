@@ -1,4 +1,5 @@
 use std::iter::Iterator;
+
 use tokio::time::Duration;
 
 /// A retry strategy driven by a fixed interval.

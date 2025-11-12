@@ -1,9 +1,15 @@
 # Changelog
 
+## Version 0.6.1
+
+- Internal change.
+
 ## Version 0.6.0
+
 - Breaking change: Updated to `edition 2024`.
 
 ## Version 0.5.6
+
 - Added `ExponentialFactorBackoff`, where the exponential value is the factor and not the duration.
 
 ## Version 0.5.5

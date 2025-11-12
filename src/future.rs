@@ -1,19 +1,16 @@
-use std::cmp;
-use std::error;
-use std::fmt;
-use std::future::Future;
-use std::iter::{IntoIterator, Iterator};
-use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::{
+    cmp, error, fmt,
+    future::Future,
+    iter::{IntoIterator, Iterator},
+    pin::Pin,
+    task::{Context, Poll},
+};
 
 use pin_project::pin_project;
 use tokio::time::{Duration, Instant, Sleep, sleep_until};
 
-use crate::error::Error as RetryError;
-use crate::notify::Notify;
-
-use super::action::Action;
-use super::condition::Condition;
+use super::{action::Action, condition::Condition};
+use crate::{error::Error as RetryError, notify::Notify};
 
 #[pin_project(project = RetryStateProj)]
 enum RetryState<A>
@@ -197,8 +194,8 @@ where
                     RetryError::Permanent(err) => Poll::Ready(Err(err)),
                     RetryError::Transient { err, retry_after } => {
                         if self.as_mut().project().condition.should_retry(&err) {
-                            let duration =
-                                retry_after.unwrap_or(self.as_ref().project_ref().duration.clone());
+                            let duration = retry_after
+                                .unwrap_or_else(|| self.as_ref().project_ref().duration.clone());
                             self.as_mut().project().notify.notify(&err, duration);
                             *self.as_mut().project().duration = duration;
                             match self.retry(err, cx) {

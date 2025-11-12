@@ -1,11 +1,14 @@
-use std::future;
-use std::iter::Take;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::Duration;
+use std::{
+    future,
+    iter::Take,
+    sync::{
+        Arc,
+        atomic::{AtomicUsize, Ordering},
+    },
+    time::Duration,
+};
 
-use tokio_retry2::strategy::ExponentialBackoff;
-use tokio_retry2::{Retry, RetryError, RetryIf};
+use tokio_retry2::{Retry, RetryError, RetryIf, strategy::ExponentialBackoff};
 
 #[tokio::test]
 async fn attempts_just_once() {

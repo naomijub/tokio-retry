@@ -1,7 +1,4 @@
-use std::error;
-use std::fmt;
-
-use std::time::Duration;
+use std::{error, fmt, time::Duration};
 
 const TRANSIENT_ERROR: &str = "transient error";
 const PERMANENT_ERROR: &str = "permanent error";
@@ -247,9 +244,9 @@ impl<T, E> MapErr<T, E> for Result<T, E> {
 
 #[cfg(test)]
 mod test {
+    use std::{error::Error as StdError, fmt};
+
     use super::*;
-    use std::error::Error as StdError;
-    use std::fmt;
 
     #[test]
     fn create_permanent_error() {

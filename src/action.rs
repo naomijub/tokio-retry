@@ -1,5 +1,6 @@
-use crate::error::Error as RetryError;
 use std::future::Future;
+
+use crate::error::Error as RetryError;
 
 /// An action can be run multiple times and produces a future.
 pub trait Action {

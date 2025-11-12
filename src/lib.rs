@@ -1,3 +1,15 @@
+#![cfg_attr(
+    not(test),
+    deny(
+        clippy::exit,
+        clippy::panic,
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::indexing_slicing,
+        clippy::unimplemented,
+        clippy::todo
+    )
+)]
 //! This library provides extensible asynchronous retry behaviors
 //! for use with the ecosystem of [`tokio`](https://tokio.rs/) libraries.
 //!

@@ -1,4 +1,5 @@
 use std::iter::Iterator;
+
 use tokio::time::Duration;
 
 /// A retry strategy driven by exponential factor back-off.
@@ -79,12 +80,12 @@ impl Iterator for ExponentialFactorBackoff {
         };
 
         // check if we reached max delay
-        if let Some(ref max_delay) = self.max_delay {
-            if duration > *max_delay {
-                #[cfg(feature = "tracing")]
-                tracing::warn!("`max_delay` for strategy reached");
-                return Some(*max_delay);
-            }
+        if let Some(ref max_delay) = self.max_delay
+            && duration > *max_delay
+        {
+            #[cfg(feature = "tracing")]
+            tracing::warn!("`max_delay` for strategy reached");
+            return Some(*max_delay);
         }
 
         let next = self.factor * self.base_factor;

@@ -1,6 +1,6 @@
 [package]
 name = "tokio-retry2"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["Julia Naomi <jnboeira@outlook.com>","Sam Rijs <srijs@airpost.net>"]
 description = "Extensible, asynchronous retry behaviors for futures/tokio"
 license = "MIT"
@@ -30,3 +30,9 @@ suspicious = { level = "deny", priority = 2 }
 style = { level = "deny", priority = 0 }
 complexity = { level = "warn", priority = 3 }
 perf = { level = "deny", priority = 1 }
+redundant_clone = "deny"
+manual_while_let_some = "deny"
+needless_borrow = "deny"
+manual_ok_or = "deny"
+needless_collect = "deny"
+or_fun_call = "deny"

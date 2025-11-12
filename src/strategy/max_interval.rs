@@ -1,4 +1,5 @@
 use std::time::Instant;
+
 use tokio::time::Duration;
 
 /// Wraps a strategy, applying `max_interval``, after which strategy will
@@ -60,7 +61,6 @@ impl<I: Iterator<Item = Duration>> Iterator for MaxIntervalIterator<I> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
     use crate::strategy::FixedInterval;
 
     #[tokio::test]
