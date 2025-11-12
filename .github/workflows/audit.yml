@@ -1,4 +1,4 @@
-name: Security audit
+name: Security
 
 permissions:
   issues: write
@@ -15,6 +15,7 @@ on:
       - '**/Cargo.lock'
 jobs:
   security_audit:
+    name: Audit
     runs-on: ubuntu-latest
     
     steps:
@@ -24,3 +25,9 @@ jobs:
       - uses: rustsec/audit-check@v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+  cargo-deny:
+    name: Cargo Deny
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: EmbarkStudios/cargo-deny-action@v2
