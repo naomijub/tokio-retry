@@ -19,6 +19,12 @@ Add this to your `Cargo.toml`:
 tokio-retry2 = { version = "0.6", features = ["jitter", "tracing"] }
 ```
 
+`MSRV = 1.85.1`
+
+### NOTICE
+
+This version is stale and will only be updated if security issues are found or relevant issues are created. Please comment the version [new issue](https://github.com/naomijub/tokio-retry/issues/new).
+
 ### Features:
 - `jitter`: adds jittery duration to the retry. Mechanism to avoid multiple systems retrying at the same time.
 - `tracing`: using `tracing` crate to indicate that a strategy has reached its `max_duration` or `max_delay`.

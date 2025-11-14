@@ -1,12 +1,18 @@
 # Changelog
 
-## Version 0.6.0
+## Version 0.6.1
+
+- Defines minimal version for version `0.6`
+
+## Version 0.6.0 [#13](https://github.com/naomijub/tokio-retry/pull/13)
+
 - Breaking change: Updated to `edition 2024`.
 
 ## Version 0.5.6
+
 - Added `ExponentialFactorBackoff`, where the exponential value is the factor and not the duration.
 
-## Version 0.5.5
+## Version 0.5.5 [#9](https://github.com/naomijub/tokio-retry/pull/9)
 
 - Include feature `tracing` to inform when a `max_duration` or `max_delay` has been reached.
 - Fixed bug that `retry_after` duration was not overwriting the strategy duration.
