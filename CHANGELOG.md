@@ -1,8 +1,12 @@
 # Changelog
 
-## Version 0.6.1
+## Version 0.6.2
 
 - Defines minimal version for version `0.6`
+
+## Version 0.6.1
+
+`YANKED`
 
 ## Version 0.6.0 [#13](https://github.com/naomijub/tokio-retry/pull/13)
 
