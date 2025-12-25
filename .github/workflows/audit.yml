@@ -27,7 +27,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
   cargo-deny:
     name: Cargo Deny
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
     - uses: EmbarkStudios/cargo-deny-action@v2
