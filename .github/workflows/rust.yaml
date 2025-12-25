@@ -30,7 +30,7 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
       - name: Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/bin/
