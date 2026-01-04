@@ -8,7 +8,10 @@ use std::{
     time::Duration,
 };
 
-use tokio_retry2::{Retry, RetryError, RetryIf, strategy::ExponentialBackoff};
+use tokio_retry2::{
+    Notify, Retry, RetryError, RetryIf,
+    strategy::{ExponentialBackoff, FixedInterval},
+};
 
 #[tokio::test]
 async fn attempts_just_once() {
@@ -180,4 +183,64 @@ fn message_100ms(err: &u64, duration: Duration) {
 fn message(err: &u64, duration: Duration) {
     let msg = format!("err: {err}, duration: {duration:?}");
     assert_eq!(msg, "err: 42, duration: 0ns");
+}
+
+#[tokio::test]
+async fn notify_retry_with_custom_struct() {
+    // Custom notifier that tracks notifications
+    struct NotificationTracker {
+        errors: Arc<std::sync::Mutex<Vec<u64>>>,
+        durations: Arc<std::sync::Mutex<Vec<Duration>>>,
+    }
+
+    impl Notify<u64> for NotificationTracker {
+        fn notify(&mut self, err: &u64, duration: Duration) {
+            self.errors.lock().unwrap().push(*err);
+            self.durations.lock().unwrap().push(duration);
+        }
+    }
+
+    let s = FixedInterval::from_millis(50).take(3);
+    let counter = Arc::new(AtomicUsize::new(0));
+    let cloned_counter = counter.clone();
+
+    let errors = Arc::new(std::sync::Mutex::new(Vec::new()));
+    let durations = Arc::new(std::sync::Mutex::new(Vec::new()));
+
+    let tracker = NotificationTracker {
+        errors: errors.clone(),
+        durations: durations.clone(),
+    };
+
+    let future = Retry::spawn_notify(
+        s,
+        move || {
+            let previous = cloned_counter.fetch_add(1, Ordering::SeqCst);
+            if previous < 3 {
+                future::ready(Err::<(), RetryError<u64>>(RetryError::transient(42)))
+            } else {
+                future::ready(Ok::<(), RetryError<u64>>(()))
+            }
+        },
+        tracker,
+    );
+
+    let res = future.await;
+
+    assert_eq!(res, Ok(()));
+    assert_eq!(counter.load(Ordering::SeqCst), 4);
+
+    // Verify notifications were tracked
+    let tracked_errors = errors.lock().unwrap();
+    let tracked_durations = durations.lock().unwrap();
+
+    assert_eq!(tracked_errors.len(), 3);
+    assert_eq!(tracked_errors[0], 42);
+    assert_eq!(tracked_errors[1], 42);
+    assert_eq!(tracked_errors[2], 42);
+
+    assert_eq!(tracked_durations.len(), 3);
+    assert_eq!(tracked_durations[0], Duration::from_millis(0));
+    assert_eq!(tracked_durations[1], Duration::from_millis(50));
+    assert_eq!(tracked_durations[2], Duration::from_millis(100));
 }

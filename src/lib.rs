@@ -178,3 +178,4 @@ pub use action::Action;
 pub use condition::Condition;
 pub use error::{Error as RetryError, MapErr};
 pub use future::{Retry, RetryIf};
+pub use notify::Notify;

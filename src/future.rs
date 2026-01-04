@@ -10,7 +10,10 @@ use pin_project::pin_project;
 use tokio::time::{Duration, Instant, Sleep, sleep_until};
 
 use super::{action::Action, condition::Condition};
-use crate::{error::Error as RetryError, notify::Notify};
+use crate::{
+    error::Error as RetryError,
+    notify::{EmptyNotify, Notify},
+};
 
 #[pin_project(project = RetryStateProj)]
 enum RetryState<A>
@@ -46,7 +49,7 @@ where
     A: Action,
 {
     #[pin]
-    retry_if: RetryIf<I, A, fn(&A::Error) -> bool, fn(&A::Error, std::time::Duration)>,
+    retry_if: RetryIf<I, A, fn(&A::Error) -> bool, Box<dyn Notify<A::Error>>>,
 }
 
 impl<I, A> Retry<I, A>
@@ -63,22 +66,25 @@ where
                 strategy,
                 action,
                 (|_| true) as fn(&A::Error) -> bool,
-                (|_, _| {}) as fn(&A::Error, std::time::Duration),
+                Box::new(EmptyNotify),
             ),
         }
     }
 
-    pub fn spawn_notify<T: IntoIterator<IntoIter = I, Item = Duration>>(
+    pub fn spawn_notify<
+        T: IntoIterator<IntoIter = I, Item = Duration>,
+        N: Notify<A::Error> + 'static,
+    >(
         strategy: T,
         action: A,
-        notify: fn(&A::Error, std::time::Duration),
+        notify: N,
     ) -> Retry<I, A> {
         Retry {
             retry_if: RetryIf::spawn(
                 strategy,
                 action,
                 (|_| true) as fn(&A::Error) -> bool,
-                notify,
+                Box::new(notify),
             ),
         }
     }
