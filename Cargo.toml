@@ -36,7 +36,3 @@ manual_ok_or = "deny"
 needless_collect = "deny"
 or_fun_call = "deny"
 type_complexity = {level = "allow", priority = 1 }
-
-# Future changes -> breaking
-must_use_candidate = {level = "allow", priority = 1 }
-return_self_not_must_use = {level = "allow", priority = 1 }

@@ -2,6 +2,7 @@ use rand::distr::uniform::SampleRange;
 use tokio::time::Duration;
 
 /// defines `jitter` based on specific duration
+#[must_use]
 pub fn jitter(duration: Duration) -> Duration {
     duration.mul_f64(rand::random::<f64>() + 0.5)
 }
@@ -12,7 +13,7 @@ pub fn jitter_with_bounds(min: f64, max: f64) -> impl Fn(Duration) -> Duration {
 }
 
 /// defines `jitter` based on range
-pub fn jitter_range<R: SampleRange<u32> >(r: R) -> impl Fn(Duration) -> Duration {
+pub fn jitter_range<R: SampleRange<u32>>(r: R) -> impl Fn(Duration) -> Duration {
     let range = rand::random_range(r);
     move |x| x * range
 }
@@ -52,6 +53,5 @@ mod tests {
         let jitter = jitter_range(0..1)(Duration::from_millis(100));
         assert!(jitter.as_millis() <= 100);
         assert!(jitter.as_millis() != 100);
-
     }
 }

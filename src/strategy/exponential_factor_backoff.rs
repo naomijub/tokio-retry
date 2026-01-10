@@ -21,6 +21,7 @@ impl ExponentialFactorBackoff {
     ///
     /// The resulting duration is calculated by taking the base factor to the `n`-th power
     /// and multiply it by the initial delay in milliseconds, where `n` denotes the number of past attempts.
+    #[must_use]
     pub const fn from_millis(initial_delay: u64, base_factor: f64) -> Self {
         Self {
             base: initial_delay,
@@ -36,6 +37,7 @@ impl ExponentialFactorBackoff {
     ///
     /// The resulting duration is calculated by taking the base factor to the `n`-th power
     /// and multiply it by the 500 milliseconds, where `n` denotes the number of past attempts.
+    #[must_use]
     pub const fn from_factor(base_factor: f64) -> Self {
         Self {
             base: 500,
@@ -48,18 +50,21 @@ impl ExponentialFactorBackoff {
     /// A initial delay in milliseconds for the strategy.
     ///
     /// Default `initial_delay` is `500`.
+    #[must_use]
     pub const fn initial_delay(mut self, initial_delay: u64) -> Self {
         self.base = initial_delay;
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration`.
+    #[must_use]
     pub const fn max_delay(mut self, duration: Duration) -> Self {
         self.max_delay = Some(duration);
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration::from_millis`.
+    #[must_use]
     pub const fn max_delay_millis(mut self, duration: u64) -> Self {
         self.max_delay = Some(Duration::from_millis(duration));
         self

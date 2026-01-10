@@ -161,7 +161,7 @@
 //! ## `jitter_range`
 //!
 //! > Limited to integer values
-//! 
+//!
 //! ```rust,no_run
 //! # #[cfg(feature = "jitter")]
 //! # {

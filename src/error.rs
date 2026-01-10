@@ -328,8 +328,8 @@ mod test {
     #[test]
     fn fmt_permanent_error() {
         let error = Error::Permanent(PERMANENT_ERROR);
-        let formatted = format!("{error}");
-        assert_eq!(formatted, PERMANENT_ERROR);
+        let formatted = "Permanent error: permanent error";
+        assert_eq!(formatted, error.to_string());
     }
 
     #[test]
@@ -338,8 +338,8 @@ mod test {
             err: TRANSIENT_ERROR,
             retry_after: None,
         };
-        let formatted = format!("{error}");
-        assert_eq!(formatted, TRANSIENT_ERROR);
+        let formatted = "Transient error: transient error";
+        assert_eq!(formatted, error.to_string());
     }
 
     #[test]

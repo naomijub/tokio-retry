@@ -11,6 +11,7 @@ pub struct FixedInterval {
 impl FixedInterval {
     /// Constructs a new fixed interval strategy,
     /// given a duration in milliseconds.
+    #[must_use]
     pub const fn from_millis(millis: u64) -> Self {
         Self {
             duration: Duration::from_millis(millis),
@@ -18,6 +19,7 @@ impl FixedInterval {
     }
 
     /// Constructs a new fixed interval strategy.
+    #[must_use]
     pub const fn new(duration: Duration) -> Self {
         Self { duration }
     }
