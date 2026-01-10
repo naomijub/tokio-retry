@@ -1,21 +1,33 @@
 # Changelog
 
+## Version 0.9.0
+
+### Breaking
+
+- Enforces `must_use` for functions returning `Self`.
+- `jitter_range` now receives a `Range<u32>`, and previous `jitter_range` is now called `jitter_with_bounds`.
+- Improved `RetryError::ToString`
+
+
 ## Version 0.8.0 [#22](https://github.com/naomijub/tokio-retry/pull/22)
 
-- Implemented Notify for Box<dyn Notify> to support trait objects
-- Modified spawn_notify to accept generic Notify implementations
-- Added EmptyNotify for default no-op behavior
-- Exported Notify trait from library root
-- Tighten clippy behaviour [#23](https://github.com/naomijub/tokio-retry/pull/23)
+- Implemented Notify for Box<dyn Notify> to support trait objects.
+- Modified spawn_notify to accept generic Notify implementations.
+- Added EmptyNotify for default no-op behavior.
+- Exported Notify trait from library root.
+- Tighten clippy behaviour [#23](https://github.com/naomijub/tokio-retry/pull/23).
 
 ## Version 0.7.0
 
-- Breaking: Increased minimum required version to 1.88.
+### Breaking
+
+- Increased minimum required version to 1.88.
 - Internal API change.
 
 ## Version 0.6.0 [#13](https://github.com/naomijub/tokio-retry/pull/13)
 
-- Breaking change: Updated to `edition 2024`.
+### Breaking
+- Updated to `edition 2024`.
 
 ## Version 0.5.6
 

@@ -118,7 +118,7 @@
 //! ## Features
 //! `[jitter]`
 //! - `jitter` ranges between 50% and 150% of the strategy delay.
-//! - `jitter_range(min: f64, max: f64)` ranges between `min * Duration` and `max * Duration`.
+//! - `jitter_with_bounds(min: f64, max: f64)` ranges between `min * Duration` and `max * Duration`.
 //!
 //! To use jitter, add this to your Cargo.toml
 //!
@@ -144,8 +144,24 @@
 //! # }
 //!````
 //!
+//! ## `jitter_with_bounds`
+//!
+//! ```rust,no_run
+//! # #[cfg(feature = "jitter")]
+//! # {
+//! use tokio_retry2::Retry;
+//! use tokio_retry2::strategy::{ExponentialFactorBackoff, jitter_with_bounds, MaxInterval};
+//!
+//! let retry_strategy = ExponentialFactorBackoff::from_millis(10, 2.)
+//!    .max_interval(10000) // set max interval to 10 seconds
+//!    .map(jitter_with_bounds(0.5, 1.2)) // add jitter ranging between 50% and 120% to the retry interval
+//!    .take(3);    // limit to 3 retries
+//! }
+//!````
 //! ## `jitter_range`
 //!
+//! > Limited to integer values
+//! 
 //! ```rust,no_run
 //! # #[cfg(feature = "jitter")]
 //! # {
@@ -154,7 +170,7 @@
 //!
 //! let retry_strategy = ExponentialFactorBackoff::from_millis(10, 2.)
 //!    .max_interval(10000) // set max interval to 10 seconds
-//!    .map(jitter_range(0.5, 1.2)) // add jitter ranging between 50% and 120% to the retry interval
+//!    .map(jitter_range(0..1)) // add jitter ranging between 0% and 100% to the retry interval
 //!    .take(3);    // limit to 3 retries
 //! }
 //!````
