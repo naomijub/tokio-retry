@@ -6,6 +6,7 @@
 - Modified spawn_notify to accept generic Notify implementations
 - Added EmptyNotify for default no-op behavior
 - Exported Notify trait from library root
+- Tighten clippy behaviour [#23](https://github.com/naomijub/tokio-retry/pull/23)
 
 ## Version 0.7.0
 
