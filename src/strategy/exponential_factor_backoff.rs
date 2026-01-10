@@ -22,7 +22,7 @@ impl ExponentialFactorBackoff {
     /// The resulting duration is calculated by taking the base factor to the `n`-th power
     /// and multiply it by the initial delay in milliseconds, where `n` denotes the number of past attempts.
     pub const fn from_millis(initial_delay: u64, base_factor: f64) -> Self {
-        ExponentialFactorBackoff {
+        Self {
             base: initial_delay,
             factor: 1f64,
             max_delay: None,
@@ -37,7 +37,7 @@ impl ExponentialFactorBackoff {
     /// The resulting duration is calculated by taking the base factor to the `n`-th power
     /// and multiply it by the 500 milliseconds, where `n` denotes the number of past attempts.
     pub const fn from_factor(base_factor: f64) -> Self {
-        ExponentialFactorBackoff {
+        Self {
             base: 500,
             factor: 1f64,
             max_delay: None,
@@ -47,20 +47,20 @@ impl ExponentialFactorBackoff {
 
     /// A initial delay in milliseconds for the strategy.
     ///
-    /// Default initial_delay is `500`.
-    pub const fn initial_delay(mut self, initial_delay: u64) -> ExponentialFactorBackoff {
+    /// Default `initial_delay` is `500`.
+    pub const fn initial_delay(mut self, initial_delay: u64) -> Self {
         self.base = initial_delay;
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration`.
-    pub const fn max_delay(mut self, duration: Duration) -> ExponentialFactorBackoff {
+    pub const fn max_delay(mut self, duration: Duration) -> Self {
         self.max_delay = Some(duration);
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration::from_millis`.
-    pub const fn max_delay_millis(mut self, duration: u64) -> ExponentialFactorBackoff {
+    pub const fn max_delay_millis(mut self, duration: u64) -> Self {
         self.max_delay = Some(Duration::from_millis(duration));
         self
     }
@@ -71,11 +71,21 @@ impl Iterator for ExponentialFactorBackoff {
 
     fn next(&mut self) -> Option<Duration> {
         // set delay duration by applying factor
-        let duration = (self.base as f64) * self.factor;
-
-        let duration = if duration > u32::MAX as f64 {
-            Duration::from_millis(u32::MAX as u64)
+        #[expect(clippy::cast_precision_loss, reason = "verified overflow")]
+        let duration = if self.base > u64::from(u32::MAX) {
+            f64::from(u32::MAX) * self.factor
         } else {
+            (self.base as f64) * self.factor
+        };
+
+        let duration = if duration > f64::from(u32::MAX) {
+            Duration::from_millis(u64::from(u32::MAX))
+        } else {
+            #[expect(
+                clippy::cast_sign_loss,
+                clippy::cast_possible_truncation,
+                reason = "verified overflow"
+            )]
             Duration::from_millis(duration as u64)
         };
 
@@ -129,11 +139,14 @@ mod tests {
 
     #[test]
     fn saturates_at_maximum_value() {
-        let mut s = ExponentialFactorBackoff::from_millis((u32::MAX - 1) as u64, 2.0);
+        let mut s = ExponentialFactorBackoff::from_millis(u64::from(u32::MAX - 1), 2.0);
 
-        assert_eq!(s.next(), Some(Duration::from_millis((u32::MAX - 1) as u64)));
-        assert_eq!(s.next(), Some(Duration::from_millis(u32::MAX as u64)));
-        assert_eq!(s.next(), Some(Duration::from_millis(u32::MAX as u64)));
+        assert_eq!(
+            s.next(),
+            Some(Duration::from_millis(u64::from(u32::MAX - 1)))
+        );
+        assert_eq!(s.next(), Some(Duration::from_millis(u64::from(u32::MAX))));
+        assert_eq!(s.next(), Some(Duration::from_millis(u64::from(u32::MAX))));
     }
 
     #[test]

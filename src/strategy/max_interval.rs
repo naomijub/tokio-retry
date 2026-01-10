@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use tokio::time::Duration;
 
-/// Wraps a strategy, applying `max_interval``, after which strategy will
+/// Wraps a strategy, applying `max_interval`, after which strategy will
 /// stop retrying.
 pub trait MaxInterval: Iterator<Item = Duration> {
     /// Applies a `max_interval` for a strategy. Same as  `max_duration`, but using millis instead of `Duration`.
@@ -34,7 +34,7 @@ pub trait MaxInterval: Iterator<Item = Duration> {
 
 impl<I> MaxInterval for I where I: Iterator<Item = Duration> {}
 
-/// A strategy wrapper with applied max_interval,
+/// A strategy wrapper with applied `max_interval`,
 /// created by [`MaxInterval::max_interval`] function.
 #[derive(Debug)]
 pub struct MaxIntervalIterator<I> {

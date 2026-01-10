@@ -20,7 +20,7 @@ impl ExponentialBackoff {
     /// The resulting duration is calculated by taking the base to the `n`-th power,
     /// where `n` denotes the number of past attempts.
     pub const fn from_millis(base: u64) -> Self {
-        ExponentialBackoff {
+        Self {
             current: base,
             base,
             factor: 1u64,
@@ -33,19 +33,19 @@ impl ExponentialBackoff {
     /// For example, using a factor of `1000` will make each delay in units of seconds.
     ///
     /// Default factor is `1`.
-    pub const fn factor(mut self, factor: u64) -> ExponentialBackoff {
+    pub const fn factor(mut self, factor: u64) -> Self {
         self.factor = factor;
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration`.
-    pub const fn max_delay(mut self, duration: Duration) -> ExponentialBackoff {
+    pub const fn max_delay(mut self, duration: Duration) -> Self {
         self.max_delay = Some(duration);
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration::from_millis`.
-    pub const fn max_delay_millis(mut self, duration: u64) -> ExponentialBackoff {
+    pub const fn max_delay_millis(mut self, duration: u64) -> Self {
         self.max_delay = Some(Duration::from_millis(duration));
         self
     }
@@ -56,11 +56,10 @@ impl Iterator for ExponentialBackoff {
 
     fn next(&mut self) -> Option<Duration> {
         // set delay duration by applying factor
-        let duration = if let Some(duration) = self.current.checked_mul(self.factor) {
-            Duration::from_millis(duration)
-        } else {
-            Duration::from_millis(u64::MAX)
-        };
+        let duration = self
+            .current
+            .checked_mul(self.factor)
+            .map_or_else(|| Duration::from_millis(u64::MAX), Duration::from_millis);
 
         // check if we reached max delay
         if let Some(ref max_delay) = self.max_delay

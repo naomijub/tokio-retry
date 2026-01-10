@@ -57,11 +57,8 @@ where
     I: Iterator<Item = Duration>,
     A: Action,
 {
-    pub fn spawn<T: IntoIterator<IntoIter = I, Item = Duration>>(
-        strategy: T,
-        action: A,
-    ) -> Retry<I, A> {
-        Retry {
+    pub fn spawn<T: IntoIterator<IntoIter = I, Item = Duration>>(strategy: T, action: A) -> Self {
+        Self {
             retry_if: RetryIf::spawn(
                 strategy,
                 action,
@@ -78,8 +75,8 @@ where
         strategy: T,
         action: A,
         notify: N,
-    ) -> Retry<I, A> {
-        Retry {
+    ) -> Self {
+        Self {
             retry_if: RetryIf::spawn(
                 strategy,
                 action,
@@ -134,8 +131,8 @@ where
         mut action: A,
         condition: C,
         notify: N,
-    ) -> RetryIf<I, A, C, N> {
-        RetryIf {
+    ) -> Self {
+        Self {
             strategy: strategy.into_iter(),
             state: RetryState::Running(action.run()),
             action,
@@ -162,23 +159,19 @@ where
         err: A::Error,
         cx: &mut Context,
     ) -> Result<Poll<Result<A::Item, A::Error>>, A::Error> {
-        match self.as_mut().project().strategy.next() {
-            None => {
-                #[cfg(feature = "tracing")]
-                tracing::warn!("ending retry: strategy reached its limit");
-                Err(err)
-            }
-            Some(duration) => {
-                *self.as_mut().project().duration += duration;
-                let deadline = Instant::now() + duration;
-                let future = sleep_until(deadline);
-                self.as_mut()
-                    .project()
-                    .state
-                    .set(RetryState::Sleeping(future));
-                Ok(self.poll(cx))
-            }
-        }
+        let Some(duration) = self.as_mut().project().strategy.next() else {
+            #[cfg(feature = "tracing")]
+            tracing::warn!("ending retry: strategy reached its limit");
+            return Err(err);
+        };
+        *self.as_mut().project().duration += duration;
+        let deadline = Instant::now() + duration;
+        let future = sleep_until(deadline);
+        self.as_mut()
+            .project()
+            .state
+            .set(RetryState::Sleeping(future));
+        Ok(self.poll(cx))
     }
 }
 
@@ -201,7 +194,7 @@ where
                     RetryError::Transient { err, retry_after } => {
                         if self.as_mut().project().condition.should_retry(&err) {
                             let duration = retry_after
-                                .unwrap_or_else(|| self.as_ref().project_ref().duration.clone());
+                                .unwrap_or_else(|| *self.as_ref().project_ref().duration);
                             self.as_mut().project().notify.notify(&err, duration);
                             *self.as_mut().project().duration = duration;
                             match self.retry(err, cx) {
@@ -216,7 +209,7 @@ where
             },
             RetryFuturePoll::Sleeping(poll_result) => match poll_result {
                 Poll::Pending => Poll::Pending,
-                Poll::Ready(_) => self.attempt(cx),
+                Poll::Ready(()) => self.attempt(cx),
             },
         }
     }

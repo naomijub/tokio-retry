@@ -22,39 +22,42 @@ pub enum Error<E> {
 }
 
 impl<E> Error<E> {
-    // Creates an permanent error.
-    pub fn permanent(err: E) -> Self {
-        Error::Permanent(err)
+    /// Creates an permanent error.
+    pub const fn permanent(err: E) -> Self {
+        Self::Permanent(err)
     }
 
-    // Creates a Result::Err container with an permanent error.
-    pub fn to_permanent<T>(err: E) -> Result<T, Self> {
-        Err(Error::Permanent(err))
+    /// Creates a `Result::Err` container with an permanent error.
+    #[expect(clippy::missing_errors_doc)]
+    pub const fn to_permanent<T>(err: E) -> Result<T, Self> {
+        Err(Self::Permanent(err))
     }
 
-    // Creates an transient error which is retried according to the defined strategy
-    // policy.
-    pub fn transient(err: E) -> Self {
-        Error::Transient {
+    /// Creates an transient error which is retried according to the defined strategy
+    /// policy.
+    pub const fn transient(err: E) -> Self {
+        Self::Transient {
             err,
             retry_after: None,
         }
     }
 
-    // Creates a Result::Err container with an transient error which
-    // is retried according to the defined strategy policy.
-    pub fn to_transient<T>(err: E) -> Result<T, Self> {
-        Err(Error::Transient {
+    /// Creates a `Result::Err` container with an transient error which
+    /// is retried according to the defined strategy policy.
+    #[expect(clippy::missing_errors_doc)]
+    pub const fn to_transient<T>(err: E) -> Result<T, Self> {
+        Err(Self::Transient {
             err,
             retry_after: None,
         })
     }
 
-    /// Creates a Result::Err container with a transient error which
+    /// Creates a `Result::Err` container with a transient error which
     /// is retried after the specified duration.
     /// Useful for handling rate limits like a HTTP 429 response.
-    pub fn to_retry_after<T>(err: E, duration: Duration) -> Result<T, Self> {
-        Err(Error::Transient {
+    #[expect(clippy::missing_errors_doc)]
+    pub const fn to_retry_after<T>(err: E, duration: Duration) -> Result<T, Self> {
+        Err(Self::Transient {
             err,
             retry_after: Some(duration),
         })
@@ -62,8 +65,8 @@ impl<E> Error<E> {
 
     /// Creates a transient error which is retried after the specified duration.
     /// Useful for handling rate limits like a HTTP 429 response.
-    pub fn retry_after(err: E, duration: Duration) -> Self {
-        Error::Transient {
+    pub const fn retry_after(err: E, duration: Duration) -> Self {
+        Self::Transient {
             err,
             retry_after: Some(duration),
         }
@@ -76,8 +79,8 @@ where
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         match *self {
-            Error::Permanent(ref err)
-            | Error::Transient {
+            Self::Permanent(ref err)
+            | Self::Transient {
                 ref err,
                 retry_after: _,
             } => err.fmt(f),
@@ -91,8 +94,8 @@ where
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
         let (name, err) = match *self {
-            Error::Permanent(ref err) => ("Permanent", err as &dyn fmt::Debug),
-            Error::Transient {
+            Self::Permanent(ref err) => ("Permanent", err as &dyn fmt::Debug),
+            Self::Transient {
                 ref err,
                 retry_after: _,
             } => ("Transient", err as &dyn fmt::Debug),
@@ -107,15 +110,15 @@ where
 {
     fn description(&self) -> &str {
         match *self {
-            Error::Permanent(_) => PERMANENT_ERROR,
-            Error::Transient { .. } => TRANSIENT_ERROR,
+            Self::Permanent(_) => PERMANENT_ERROR,
+            Self::Transient { .. } => TRANSIENT_ERROR,
         }
     }
 
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
-            Error::Permanent(ref err)
-            | Error::Transient {
+            Self::Permanent(ref err)
+            | Self::Transient {
                 ref err,
                 retry_after: _,
             } => err.source(),
@@ -131,8 +134,8 @@ where
 /// be constructed explicitly. This implementation is for making
 /// the question mark operator (?) and the `try!` macro to work.
 impl<E> From<E> for Error<E> {
-    fn from(err: E) -> Error<E> {
-        Error::Transient {
+    fn from(err: E) -> Self {
+        Self::Transient {
             err,
             retry_after: None,
         }
@@ -145,13 +148,13 @@ where
 {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Error::Permanent(self_err), Error::Permanent(other_err)) => self_err == other_err,
+            (Self::Permanent(self_err), Self::Permanent(other_err)) => self_err == other_err,
             (
-                Error::Transient {
+                Self::Transient {
                     err: self_err,
                     retry_after: self_retry_after,
                 },
-                Error::Transient {
+                Self::Transient {
                     err: other_err,
                     retry_after: other_retry_after,
                 },
@@ -170,7 +173,7 @@ pub enum RetryResult<T, E> {
 
 #[cfg(feature = "implicit_results")]
 impl<T, E> From<Result<T, Error<E>>> for RetryResult<T, E> {
-    fn from(r: Result<T, Error<E>>) -> RetryResult<T, E> {
+    fn from(r: Result<T, Error<E>>) -> Self {
         match r {
             Ok(t) => Self::Ok(t),
             Err(e) => Self::Err(e),
@@ -180,7 +183,7 @@ impl<T, E> From<Result<T, Error<E>>> for RetryResult<T, E> {
 
 #[cfg(feature = "implicit_results")]
 impl<T, E> From<Result<T, E>> for RetryResult<T, E> {
-    fn from(r: Result<T, E>) -> RetryResult<T, E> {
+    fn from(r: Result<T, E>) -> Self {
         r.map_transient_err().into()
     }
 }
@@ -208,17 +211,20 @@ impl<T: PartialEq, E: PartialEq> PartialEq<RetryResult<T, E>> for Result<T, Erro
 
 #[cfg(feature = "implicit_results")]
 impl<T> From<Option<T>> for RetryResult<T, String> {
-    fn from(r: Option<T>) -> RetryResult<T, String> {
-        match r {
-            Some(t) => Self::Ok(t),
-            None => Self::Err(Error::Transient {
-                err: String::from(TRANSIENT_ERROR),
-                retry_after: None,
-            }),
-        }
+    fn from(r: Option<T>) -> Self {
+        r.map_or_else(
+            || {
+                Self::Err(Error::Transient {
+                    err: String::from(TRANSIENT_ERROR),
+                    retry_after: None,
+                })
+            },
+            |t| Self::Ok(t),
+        )
     }
 }
 
+#[expect(clippy::missing_errors_doc)]
 pub trait MapErr<T, E> {
     fn map_transient_err(self) -> Result<T, Error<E>>;
     fn map_permanent_err(self) -> Result<T, Error<E>>;
@@ -380,7 +386,7 @@ mod test {
         assert!(error.cause().is_none());
     }
 
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Eq)]
     pub struct MyError(pub &'static str);
     impl fmt::Display for MyError {
         fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {

@@ -26,14 +26,17 @@ pin-project = "1.1.5"
 tokio = { version = "1.40", features = ["full"] }
 
 [lints.clippy]
-correctness = { level = "deny", priority = -1 }
-suspicious = { level = "deny", priority = 2 }
-style = { level = "deny", priority = 0 }
-complexity = { level = "warn", priority = 3 }
-perf = { level = "deny", priority = 1 }
+all = "deny"
+pedantic = "deny"
+nursery = "deny"
 redundant_clone = "deny"
 manual_while_let_some = "deny"
 needless_borrow = "deny"
 manual_ok_or = "deny"
 needless_collect = "deny"
 or_fun_call = "deny"
+type_complexity = {level = "allow", priority = 1 }
+
+# Future changes -> breaking
+must_use_candidate = {level = "allow", priority = 1 }
+return_self_not_must_use = {level = "allow", priority = 1 }

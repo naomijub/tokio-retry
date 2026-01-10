@@ -9,18 +9,18 @@ where
     F: FnMut(&E, Duration),
 {
     fn notify(&mut self, err: &E, duration: Duration) {
-        self(err, duration)
+        self(err, duration);
     }
 }
 
 impl<E> Notify<E> for Box<dyn Notify<E>> {
     fn notify(&mut self, err: &E, duration: Duration) {
-        (**self).notify(err, duration)
+        (**self).notify(err, duration);
     }
 }
 
 /// A notify implementation that does nothing
-pub(crate) struct EmptyNotify;
+pub struct EmptyNotify;
 
 impl<E> Notify<E> for EmptyNotify {
     fn notify(&mut self, _err: &E, _duration: Duration) {

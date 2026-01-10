@@ -1,3 +1,4 @@
+#![allow(clippy::trivially_copy_pass_by_ref)]
 use std::{
     future,
     iter::Take,
@@ -231,8 +232,8 @@ async fn notify_retry_with_custom_struct() {
     assert_eq!(counter.load(Ordering::SeqCst), 4);
 
     // Verify notifications were tracked
-    let tracked_errors = errors.lock().unwrap();
-    let tracked_durations = durations.lock().unwrap();
+    let tracked_errors = errors.lock().unwrap().clone();
+    let tracked_durations = durations.lock().unwrap().clone();
 
     assert_eq!(tracked_errors.len(), 3);
     assert_eq!(tracked_errors[0], 42);

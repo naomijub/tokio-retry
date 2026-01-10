@@ -10,7 +10,7 @@ use tokio::time::Duration;
 /// perform better and lead to better throughput than the `ExponentialBackoff`
 /// strategy.
 ///
-/// See ["A Performance Comparison of Different Backoff Algorithms under Different Rebroadcast Probabilities for MANETs."](https://www.researchgate.net/profile/Saher-Manaseer/publication/255672213_A_Performance_Comparison_of_Different_Backoff_Algorithms_under_Different_Rebroadcast_Probabilities_for_MANET's/links/542d40220cf29bbc126d2378/A-Performance-Comparison-of-Different-Backoff-Algorithms-under-Different-Rebroadcast-Probabilities-for-MANETs.pdf)
+/// See [A Performance Comparison of Different Backoff Algorithms under Different Rebroadcast Probabilities for MANETs.](https://www.researchgate.net/profile/Saher-Manaseer/publication/255672213_A_Performance_Comparison_of_Different_Backoff_Algorithms_under_Different_Rebroadcast_Probabilities_for_MANET's/links/542d40220cf29bbc126d2378/A-Performance-Comparison-of-Different-Backoff-Algorithms-under-Different-Rebroadcast-Probabilities-for-MANETs.pdf)
 /// for more details.
 #[derive(Debug, Clone)]
 pub struct FibonacciBackoff {
@@ -23,8 +23,8 @@ pub struct FibonacciBackoff {
 impl FibonacciBackoff {
     /// Constructs a new fibonacci back-off strategy,
     /// given a base duration in milliseconds.
-    pub const fn from_millis(millis: u64) -> FibonacciBackoff {
-        FibonacciBackoff {
+    pub const fn from_millis(millis: u64) -> Self {
+        Self {
             current: millis,
             next: millis,
             factor: 1u64,
@@ -37,19 +37,19 @@ impl FibonacciBackoff {
     /// For example, using a factor of `1000` will make each delay in units of seconds.
     ///
     /// Default factor is `1`.
-    pub const fn factor(mut self, factor: u64) -> FibonacciBackoff {
+    pub const fn factor(mut self, factor: u64) -> Self {
         self.factor = factor;
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration`.
-    pub const fn max_delay(mut self, duration: Duration) -> FibonacciBackoff {
+    pub const fn max_delay(mut self, duration: Duration) -> Self {
         self.max_delay = Some(duration);
         self
     }
 
     /// Apply a maximum delay. No single retry delay will be longer than this `Duration::from_millis`.
-    pub const fn max_delay_millis(mut self, duration: u64) -> FibonacciBackoff {
+    pub const fn max_delay_millis(mut self, duration: u64) -> Self {
         self.max_delay = Some(Duration::from_millis(duration));
         self
     }
@@ -60,11 +60,10 @@ impl Iterator for FibonacciBackoff {
 
     fn next(&mut self) -> Option<Duration> {
         // set delay duration by applying factor
-        let duration = if let Some(duration) = self.current.checked_mul(self.factor) {
-            Duration::from_millis(duration)
-        } else {
-            Duration::from_millis(u64::MAX)
-        };
+        let duration = self
+            .current
+            .checked_mul(self.factor)
+            .map_or_else(|| Duration::from_millis(u64::MAX), Duration::from_millis);
 
         // check if we reached max delay
         if let Some(ref max_delay) = self.max_delay

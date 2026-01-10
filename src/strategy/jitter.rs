@@ -1,11 +1,15 @@
+use std::ops::RangeInclusive;
+
 use tokio::time::Duration;
 
+/// defines `jitter` based on specific duration
 pub fn jitter(duration: Duration) -> Duration {
     duration.mul_f64(rand::random::<f64>() + 0.5)
 }
 
+/// defines `jitter` based on explicit range
 pub fn jitter_range(min: f64, max: f64) -> impl Fn(Duration) -> Duration {
-    move |x| x.mul_f64(rand::random::<f64>() * (max - min) + min)
+    move |x| x.mul_f64(rand::random::<f64>().mul_add(max - min, min))
 }
 
 #[cfg(test)]
