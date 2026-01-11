@@ -245,3 +245,25 @@ async fn notify_retry_with_custom_struct() {
     assert_eq!(tracked_durations[1], Duration::from_millis(50));
     assert_eq!(tracked_durations[2], Duration::from_millis(100));
 }
+
+/// Verify that Retry futures are Send, which is required for spawning on multi-threaded
+/// tokio executors. This is a compile-time check - if the futures aren't Send, the test
+/// won't compile.
+#[test]
+fn retry_futures_are_send() {
+    fn assert_send<T: Send>(_: &T) {}
+
+    // Test Retry::spawn produces a Send future
+    let future = Retry::spawn(std::iter::empty(), || {
+        future::ready(Ok::<_, RetryError<()>>(()))
+    });
+    assert_send(&future);
+
+    // Test Retry::spawn_notify with a closure produces a Send future
+    let future = Retry::spawn_notify(
+        std::iter::empty(),
+        || future::ready(Ok::<_, RetryError<()>>(())),
+        |_err: &(), _duration: Duration| {},
+    );
+    assert_send(&future);
+}

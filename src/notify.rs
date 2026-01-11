@@ -1,12 +1,12 @@
 use std::time::Duration;
 
-pub trait Notify<E> {
+pub trait Notify<E>: Send {
     fn notify(&mut self, err: &E, duration: Duration);
 }
 
 impl<E, F> Notify<E> for F
 where
-    F: FnMut(&E, Duration),
+    F: FnMut(&E, Duration) + Send,
 {
     fn notify(&mut self, err: &E, duration: Duration) {
         self(err, duration);
