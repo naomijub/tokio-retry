@@ -1,5 +1,11 @@
 # Changelog
 
+## Verion 0.9.1 [#26](https://github.com/naomijub/tokio-retry/pull/26)
+
+### Bugfix
+
+- Requires `Notify` trait to implement `Send` for multi-thread environments
+
 ## Version 0.9.0 [#24](https://github.com/naomijub/tokio-retry/pull/24)
 
 ### Breaking
