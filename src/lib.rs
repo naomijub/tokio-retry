@@ -27,19 +27,25 @@
 //!     | 3       | 2000ms|
 //!     | 4       | 4000ms|
 //!
-//! - `FixedInterval`: in this backoff strategy, a fixed interval is used as constant. so if defined from 500ms, all attempts will happen at 500ms.
+//! - `FixedInterval`: in this backoff strategy, a fixed interval is used as constant. So if defined from 500ms, all attempts will happen at 500ms.
 //!     | attempt | delay |
 //!     |---------|-------|
 //!     | 1       | 500ms|
 //!     | 2       | 500ms|
 //!     | 3       | 500ms|
-//! - `FibonacciBackoff`: a Fibonacci backoff strategy is used. so if defined from 500ms, the next retry will happen at 500ms, and the following will be at 1000ms.
+//! - `FibonacciBackoff`: a Fibonacci backoff strategy is used. So if defined from 500ms, the next retry will happen at 500ms, and the following will be at 1000ms.
 //!     | attempt | delay |
 //!     |---------|-------|
 //!     | 1       | 500ms|
 //!     | 2       | 500ms|
 //!     | 3       | 1000ms|
 //!     | 4       | 1500ms|
+//! - `LinearBackoff`: a Linear Backoff strategy is used. So if defined from 500ms, with increment of 100ms, then the next retry will be 600ms. If `increment` is not defined it will be equal to `initial`.
+//!     | attempt | delay |
+//!     |---------|-------|
+//!     | 1       | 500ms|
+//!     | 2       | 600ms|
+//!     | 3       | 700ms|
 //!
 //! > All strategies can be jittered with the `jitter` feature.
 //!
@@ -49,7 +55,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokio-retry2 = "0.6"
+//! tokio-retry2 = "0.9"
 //! ```
 //!
 //! # Example
