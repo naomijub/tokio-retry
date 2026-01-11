@@ -159,4 +159,24 @@ mod tests {
         assert_eq!(s.next(), Some(Duration::from_millis(143)));
         assert_eq!(s.next(), Some(Duration::from_millis(163)));
     }
+
+    #[test]
+    fn returns_linear_with_increment_secs() {
+        let mut s = LinearBackoff::new(Duration::from_secs(1)).increment_secs(2);
+
+        assert_eq!(s.next(), Some(Duration::from_secs(1)));
+        assert_eq!(s.next(), Some(Duration::from_secs(3)));
+        assert_eq!(s.next(), Some(Duration::from_secs(5)));
+    }
+
+    #[test]
+    fn returns_linear_max_delay_duration() {
+        let mut s = LinearBackoff::new(Duration::from_millis(100))
+            .increment(Duration::from_millis(70))
+            .max_delay(Duration::from_millis(200));
+
+        assert_eq!(s.next(), Some(Duration::from_millis(100)));
+        assert_eq!(s.next(), Some(Duration::from_millis(170)));
+        assert_eq!(s.next(), Some(Duration::from_millis(200)));
+    }
 }

@@ -343,6 +343,16 @@ mod test {
     }
 
     #[test]
+    fn fmt_transient_error_with_duration() {
+        let error = Error::Transient {
+            err: TRANSIENT_ERROR,
+            retry_after: Some(Duration::from_millis(100)),
+        };
+        let formatted = "Transient error (retry after 100ms): transient error";
+        assert_eq!(formatted, error.to_string());
+    }
+
+    #[test]
     fn debug_permanent_error() {
         let error = Error::Permanent(PERMANENT_ERROR);
         let debug = format!("{error:?}");
