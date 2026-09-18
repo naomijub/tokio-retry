@@ -7,6 +7,7 @@ permissions:
 
 jobs:
   review:
+    name: "AI Code Review"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
